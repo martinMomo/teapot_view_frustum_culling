@@ -16,10 +16,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 
-/*
-#include <glm/glm.hpp>
-#include <glm/ext.hpp>
-*/
 #include "GLFWApp.h"
 #include "GLSLShader.h"
 #include "glut_teapot.h"
@@ -210,13 +206,17 @@ public:
     
     for(int i = 0; i < teapotCount; i++){
       if(teapots[i]->visible && currentCamera == &mainCamera){
+        // If the teapot is visible and it's in the main camera mode
+        // then draw the teapot; otherwise don't
         modelViewMatrix = glm::translate(lookAtMatrix, teapots[i]->position);
         //modelViewMatrix = lookAtMatrix;
         normalMatrix = glm::inverseTranspose(modelViewMatrix);
         shaderProgram.activate( );
         activateUniforms(_light0, _light1, teapots[i]->material);
         teapots[i]->draw( );
-      }else{
+      }else if(currentCamera == &bovCamera){
+        // If this is the bird's eye view then draw everything
+        // but with different materials
         Material redMaterial = Material(glm::vec4(0.2, 0.2, 0.2, 1.0), glm::vec4(1.0, 0.0, 0.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
         Material whiteMaterial = Material(glm::vec4(0.2, 0.2, 0.2, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
         Material* currentMaterial = &redMaterial;
