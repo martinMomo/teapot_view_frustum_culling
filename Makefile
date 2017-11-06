@@ -28,7 +28,7 @@ TARGET = teapot_vision
 CXXFILES =   glut_teapot.cpp teapot_vision.cpp
 CFILES =  
 # Headers
-HEADERS =  Camera.h GLFWApp.h GLSLShader.h GLTexture.h SpinningLight.h UtahTeapot.h glut_teapot.h
+HEADERS =  Camera.h GLFWApp.h GLSLShader.h GLTexture.h glut_teapot.h Material.h SpinningLight.h Teapot.h UtahTeapot.h
 
 OBJECTS = $(CXXFILES:.cpp=.o) $(CFILES:.c=.o)
 

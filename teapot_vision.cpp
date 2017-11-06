@@ -34,20 +34,21 @@ void msglVersion(void){
 }
 
 
-class HelloGLSLApp : public GLFWApp{
+class TeapotVisionApp : public GLFWApp{
 private:
   float rotationDelta;
 
   glm::vec3 centerPosition;
   Camera* currentCamera;
   Camera mainCamera;
-  Camera bovCamera;
+  Camera bevCamera;
 
   glm::mat4 modelViewMatrix;
   glm::mat4 projectionMatrix;
   glm::mat4 normalMatrix;
   
   GLSLProgram shaderProgram;
+  GLSLProgram no_lightShaderProgram;
 
   SpinningLight light0;
   SpinningLight light1; 
@@ -69,7 +70,7 @@ private:
   unsigned int uShininess;
   
 public:
-  HelloGLSLApp(int argc, char* argv[]) :
+  TeapotVisionApp(int argc, char* argv[]) :
     GLFWApp(argc, argv, std::string("Teapot Vision").c_str( ), 
             600, 600){ }
   
@@ -78,9 +79,10 @@ public:
   }
   
   void initTeapots( ){
+    std::srand(time(NULL));
     for(int i = 0; i < teapotCount; i++){
       glm::vec3 _diffuseColor = glm::linearRand(glm::vec3(0.2), glm::vec3(1.0));
-      std::cerr << glm::to_string(_diffuseColor) << std::endl;
+      //std::cerr << glm::to_string(_diffuseColor) << std::endl;
       glm::vec4 diffuseColor = glm::vec4(_diffuseColor, 1.0);
       Material* m = new Material(glm::vec4(0.2, 0.2, 0.2, 1.0), diffuseColor, glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
       glm::vec2 xy = glm::diskRand(30.0);
@@ -90,8 +92,8 @@ public:
   }
 
   void initCamera( ){
-    mainCamera = Camera(glm::vec3(0.0, 0.0, 10.0), glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 0.0), 90.0, 1.0, 100.0);
-    bovCamera =  Camera(glm::vec3(0.0, 0.0, 40.0), glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 0.0), 90.0, 1.0, 100.0);
+    mainCamera = Camera(glm::vec3(0.0, 0.0, 20.0), glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 0.0), 45.0, 1.0, 100.0);
+    bevCamera =  Camera(glm::vec3(0.0, 0.0, 70.0), glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 0.0), 45.0, 1.0, 100.0);
     currentCamera = &mainCamera;
   }
 
@@ -116,24 +118,42 @@ public:
     initRotationDelta( );
     initLights( );
     
-    // Load shader program
-    const char* vertexShaderSource = "phong.vert.glsl";
-    const char* fragmentShaderSource = "phong.frag.glsl";
+    // Load shader programs
+    const char* vertexShaderSource = "blinn_phong.vert.glsl";
+    const char* fragmentShaderSource = "blinn_phong.frag.glsl";
     FragmentShader fragmentShader(fragmentShaderSource);
     VertexShader vertexShader(vertexShaderSource);
     shaderProgram.attach(vertexShader);
     shaderProgram.attach(fragmentShader);
     shaderProgram.link( );
     shaderProgram.activate( );
+
+    const char* no_lightVertexShaderSource = "no_lighting.vert.glsl";
+    const char* no_lightFragmentShaderSource = "no_lighting.frag.glsl";
+    FragmentShader no_lightFragmentShader(no_lightFragmentShaderSource);
+    VertexShader no_lightVertexShader(no_lightVertexShaderSource);
+    no_lightShaderProgram.attach(no_lightVertexShader);
+    no_lightShaderProgram.attach(no_lightFragmentShader);
+    no_lightShaderProgram.link( );
+    //no_lightShaderProgram.activate( );
+
     
     printf("Shader program built from %s and %s.\n",
            vertexShaderSource, fragmentShaderSource);
     if( shaderProgram.isActive( ) ){
       printf("Shader program is loaded and active with id %d.\n", shaderProgram.id( ) );
     }else{
-      printf("Shader program did not load and activate correctly. Exiting.");
-      exit(1);
+      printf("Shader program is not active, id: %d\n.", shaderProgram.id( ));
     }
+
+    printf("Shader program built from %s and %s.\n",
+           no_lightVertexShaderSource, no_lightFragmentShaderSource);
+    if( no_lightShaderProgram.isActive( ) ){
+      printf("Shader program is loaded and active with id %d.\n", no_lightShaderProgram.id( ) );
+    }else{
+      printf("Shader program is not active, id: %d\n.", no_lightShaderProgram.id( ));
+    }
+
     
     // Set up uniform variables for the shader program
     uModelViewMatrix = glGetUniformLocation(shaderProgram.id( ), "modelViewMatrix");
@@ -204,26 +224,33 @@ public:
     _light0 = lookAtMatrix * light0.position( );
     _light1 = lookAtMatrix * light1.position( );
     
-    for(int i = 0; i < teapotCount; i++){
-      if(teapots[i]->visible && currentCamera == &mainCamera){
-        // If the teapot is visible and it's in the main camera mode
-        // then draw the teapot; otherwise don't
+    if(currentCamera == &mainCamera){
+      for(int i = 0; i < teapotCount; i++){
+        if(teapots[i]->visible){
+          // If the teapot is visible and it's in the main camera mode
+          // then draw the teapot; otherwise don't
+          modelViewMatrix = glm::translate(lookAtMatrix, teapots[i]->position);
+          //modelViewMatrix = lookAtMatrix;
+          normalMatrix = glm::inverseTranspose(modelViewMatrix);
+          shaderProgram.activate( );
+          activateUniforms(_light0, _light1, teapots[i]->material);
+          //no_lightShaderProgram.activate( );
+          teapots[i]->draw( );
+        }
+      }
+    }else{
+          // If this is the bird's eye view then draw everything
+          // but with different materials
+      Material redMaterial = Material(glm::vec4(0.2, 0.2, 0.2, 1.0), glm::vec4(1.0, 0.0, 0.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
+      Material whiteMaterial = Material(glm::vec4(0.2, 0.2, 0.2, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
+      Material yellowMaterial = Material(glm::vec4(0.2, 0.2, 0.2, 1.0), glm::vec4(1.0, 1.0, 0.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
+      Material* currentMaterial = &redMaterial;
+      shaderProgram.activate( );
+      for(int i = 0; i < teapotCount; i++){
         modelViewMatrix = glm::translate(lookAtMatrix, teapots[i]->position);
-        //modelViewMatrix = lookAtMatrix;
+          //modelViewMatrix = lookAtMatrix;
         normalMatrix = glm::inverseTranspose(modelViewMatrix);
-        shaderProgram.activate( );
-        activateUniforms(_light0, _light1, teapots[i]->material);
-        teapots[i]->draw( );
-      }else if(currentCamera == &bovCamera){
-        // If this is the bird's eye view then draw everything
-        // but with different materials
-        Material redMaterial = Material(glm::vec4(0.2, 0.2, 0.2, 1.0), glm::vec4(1.0, 0.0, 0.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
-        Material whiteMaterial = Material(glm::vec4(0.2, 0.2, 0.2, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
-        Material* currentMaterial = &redMaterial;
-        modelViewMatrix = glm::translate(lookAtMatrix, teapots[i]->position);
-        //modelViewMatrix = lookAtMatrix;
-        normalMatrix = glm::inverseTranspose(modelViewMatrix);
-        shaderProgram.activate( );
+        //no_lightShaderProgram.activate( );
         if(teapots[i]->visible){
           currentMaterial = &redMaterial;
         }else{
@@ -231,8 +258,13 @@ public:
         }
         activateUniforms(_light0, _light1, currentMaterial);
         teapots[i]->draw( );
-
       }
+      //no_lightShaderProgram.activate( );
+      modelViewMatrix = glm::translate(lookAtMatrix, mainCamera.eyePosition);
+      normalMatrix = glm::inverseTranspose(modelViewMatrix);
+      activateUniforms(_light0, _light1, &yellowMaterial);
+      mainCamera.draw( );
+      mainCamera.drawViewFrustum(ratio);
     }
 
     
@@ -292,7 +324,7 @@ public:
     }else if(isKeyPressed('P')){
       currentCamera = &mainCamera;
     }else if(isKeyPressed('B')){
-      currentCamera = &bovCamera;
+      currentCamera = &bevCamera;
     }
     return !msglError( );
   }
@@ -301,7 +333,7 @@ public:
 
 
 int main(int argc, char* argv[]){
-  HelloGLSLApp app(argc, argv);
+  TeapotVisionApp app(argc, argv);
   return app();
 }
 

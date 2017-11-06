@@ -3,7 +3,7 @@
  * Michael Shafae
  * mshafae at fullerton.edu
  * 
- * A simple Phong shader with two light sources.
+ * A simple shader with no sources.
  *
  * Be aware that for this course, we are limiting ourselves to
  * GLSL v.1.2. This is not at all the contemporary shading
@@ -15,18 +15,19 @@
  *
  */
 
-// These are passed in from the CPU program, camera_control_*.cpp
+// These are passed in from the CPU program
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
 
 
 // These are variables that we wish to send to our fragment shader
 // In later versions of GLSL, these are 'out' variables.
-varying vec3 myNormal;
-varying vec4 myVertex;
+//varying vec3 myNormal;
+//varying vec4 myVertex;
 
 void main() {
+  gl_FrontColor = gl_Color;
   gl_Position = projectionMatrix * modelViewMatrix * gl_Vertex;
-  myNormal = gl_Normal;
-  myVertex = gl_Vertex;
+  //myNormal = gl_Normal;
+  //myVertex = gl_Vertex;
 }

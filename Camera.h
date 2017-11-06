@@ -14,6 +14,7 @@
 #include <glm/gtx/matrix_cross_product.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
@@ -35,7 +36,126 @@ public:
   }
 
   Camera( ){ };
-  ~Camera( ){}
+  ~Camera( ){ }
+
+  void draw( ){
+    // unit cube; centered at origin, axis aligned
+    glBegin(GL_QUADS);
+    // Top
+    glNormal3f(0.0, 1.0, 0.0);
+    glVertex3f(0.5, 0.5, -0.5);
+    glVertex3f(0.5, 0.5, 0.5);
+    glVertex3f(-0.5, 0.5, 0.5);
+    glVertex3f(-0.5, 0.5, -0.5);
+    // Bottom
+    glNormal3f(0.0, -1.0, 0.0);
+    glVertex3f(0.5, -0.5, -0.5);
+    glVertex3f(0.5, -0.5, 0.5);
+    glVertex3f(-0.5, -0.5, 0.5);
+    glVertex3f(-0.5, -0.5, -0.5);
+    // Front
+    glNormal3f(0.0, 0.0, -1.0);
+    glVertex3f(0.5, -0.5, -0.5);
+    glVertex3f(0.5, 0.5, -0.5);
+    glVertex3f(-0.5, 0.5, -0.5);
+    glVertex3f(-0.5, -0.5, -0.5);
+    // Back
+    glNormal3f(0.0, 0.0, 1.0);
+    glVertex3f(0.5, -0.5, 0.5);
+    glVertex3f(0.5, 0.5, 0.5);
+    glVertex3f(-0.5, 0.5, 0.5);
+    glVertex3f(-0.5, -0.5, 0.5);
+    // Left
+    glNormal3f(-1.0, 0.0, 0.0);
+    glVertex3f(-0.5, -0.5, -0.5);
+    glVertex3f(-0.5, 0.5, -0.5);
+    glVertex3f(-0.5, 0.5, 0.5);
+    glVertex3f(-0.5, -0.5, 0.5);
+    // Right
+    glNormal3f(1.0, 0.0, 0.0);
+    glVertex3f(0.5, -0.5, -0.5);
+    glVertex3f(0.5, 0.5, -0.5);
+    glVertex3f(0.5, 0.5, 0.5);
+    glVertex3f(0.5, -0.5, 0.5);
+    glEnd( );
+  }
+
+  float halfHeight( ){
+    float fovy_rads = fovy * (M_PI / 180.0);
+    float hh = tan(fovy_rads);
+    return hh;
+  }
+
+  float halfWidth(float windowAspectRatio){
+    return halfHeight( ) * windowAspectRatio;
+  }
+
+  void drawViewFrustum(float windowAspectRatio){
+    // This code is bugging; please fix it.
+    // n/f == near/far  u/l == upper/lower  r/l == right/left
+    // E + dminD + uU + rR
+    // E + dmax / dmin (dminD + uU + rR)
+    float dmax_dmin = far / near;
+    float h = halfHeight( );
+    float w = halfWidth(windowAspectRatio);
+    glm::vec3 nur = eyePosition + near * gaze( ) + h * upVector + w * right( );
+    glm::vec3 nul = eyePosition + near * gaze( ) + h * upVector + -w * right( );
+    glm::vec3 nll = eyePosition + near * gaze( ) + -h * upVector + -w * right( );
+    glm::vec3 nlr = eyePosition + near * gaze( ) + -h * upVector + w * right( );
+    glm::vec3 fur = dmax_dmin * nur;
+    glm::vec3 ful = dmax_dmin * nul;
+    glm::vec3 fll = dmax_dmin * nll;
+    glm::vec3 flr = dmax_dmin * nlr;
+
+    /*
+    std::cerr << "fovy: " << fovy << std::endl;
+    std::cerr << "near: " << near << std::endl;
+    std::cerr << "far: " << far << std::endl;
+    std::cerr << "half height: " << h << std::endl;
+    std::cerr << "half width" << w << std::endl;
+    std::cerr << "dmax_dmin: " << dmax_dmin << std::endl;
+    std::cerr << "nur: " << glm::to_string(nur) << std::endl;
+    std::cerr << "nul: " << glm::to_string(nul) << std::endl;
+    std::cerr << "nll: " << glm::to_string(nll) << std::endl;
+    std::cerr << "nlr: " << glm::to_string(nlr) << std::endl;
+    */
+
+    glNormal3f(0.0, 1.0, 0.0);
+
+    // Top
+    glBegin(GL_LINE_LOOP);
+    glVertex3fv(glm::value_ptr(nur));
+    glVertex3fv(glm::value_ptr(fur));
+    glVertex3fv(glm::value_ptr(ful));    
+    glVertex3fv(glm::value_ptr(nul));
+    glEnd( );
+
+    // Bottom
+    glBegin(GL_LINE_LOOP);
+    glVertex3fv(glm::value_ptr(nlr));
+    glVertex3fv(glm::value_ptr(flr));
+    glVertex3fv(glm::value_ptr(fll));    
+    glVertex3fv(glm::value_ptr(nll));
+    glEnd( );
+
+    // Front
+    glBegin(GL_LINE_LOOP);
+    glVertex3fv(glm::value_ptr(nlr));
+    glVertex3fv(glm::value_ptr(nur));
+    glVertex3fv(glm::value_ptr(nul));    
+    glVertex3fv(glm::value_ptr(nll));
+    glEnd( );
+
+    // Back
+    glBegin(GL_LINE_LOOP);
+    glVertex3fv(glm::value_ptr(flr));
+    glVertex3fv(glm::value_ptr(fur));
+    glVertex3fv(glm::value_ptr(ful));    
+    glVertex3fv(glm::value_ptr(fll));
+    glEnd( );
+
+
+  }
 
   glm::vec3 gaze( ){
     // this will fail miserably if gaze is a zero length vector.

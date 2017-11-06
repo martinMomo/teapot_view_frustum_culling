@@ -41,7 +41,7 @@ vec4 computeLight(const in vec3 direction, const in vec4 lightcolor, const in ve
   float nDotR = dot(normal, reflection);
   vec4 phong = specular * lightcolor * pow(max(nDotR, 0.0), shininess);
 
-  vec4 retval = lambert;
+  vec4 retval = lambert + phong;
   return retval;
 }       
 
@@ -62,17 +62,16 @@ void main (void){
   // Light 0, point
   vec3 position0 = light0_position.xyz / light0_position.w;
   vec3 direction0 = normalize(position0 - mypos);
-  vec3 reflection0 = normalize(reflect(normal, direction0));
+  vec3 half0 = normalize(direction0 + eyedirn);
 
-  vec4 color0 = computeLight(direction0, light0_color, normal, reflection0) ;
+  vec4 color0 = computeLight(direction0, light0_color, normal, half0) ;
 
   // Light 1, point 
   vec3 position1 = light1_position.xyz / light1_position.w;
   vec3 direction1 = normalize(position1 - mypos);
-  //vec3 half1 = normalize(direction1 + eyedirn); 
-  vec3 reflection1 = normalize(reflect(normal, direction1));
+  vec3 half1 = normalize(direction1 + eyedirn); 
 
-  vec4 color1 = computeLight(direction1, light1_color, normal, reflection1) ;
+  vec4 color1 = computeLight(direction1, light1_color, normal, half1) ;
     
   gl_FragColor = ambient + color0 + color1;
 }
