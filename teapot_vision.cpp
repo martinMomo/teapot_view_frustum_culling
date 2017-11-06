@@ -48,7 +48,7 @@ private:
   glm::mat4 normalMatrix;
   
   GLSLProgram shaderProgram;
-  GLSLProgram no_lightShaderProgram;
+  //GLSLProgram no_lightShaderProgram;
 
   SpinningLight light0;
   SpinningLight light1; 
@@ -128,6 +128,7 @@ public:
     shaderProgram.link( );
     shaderProgram.activate( );
 
+    /*
     const char* no_lightVertexShaderSource = "no_lighting.vert.glsl";
     const char* no_lightFragmentShaderSource = "no_lighting.frag.glsl";
     FragmentShader no_lightFragmentShader(no_lightFragmentShaderSource);
@@ -135,6 +136,7 @@ public:
     no_lightShaderProgram.attach(no_lightVertexShader);
     no_lightShaderProgram.attach(no_lightFragmentShader);
     no_lightShaderProgram.link( );
+    */
     //no_lightShaderProgram.activate( );
 
     
@@ -146,6 +148,7 @@ public:
       printf("Shader program is not active, id: %d\n.", shaderProgram.id( ));
     }
 
+    /*
     printf("Shader program built from %s and %s.\n",
            no_lightVertexShaderSource, no_lightFragmentShaderSource);
     if( no_lightShaderProgram.isActive( ) ){
@@ -153,7 +156,7 @@ public:
     }else{
       printf("Shader program is not active, id: %d\n.", no_lightShaderProgram.id( ));
     }
-
+    */
     
     // Set up uniform variables for the shader program
     uModelViewMatrix = glGetUniformLocation(shaderProgram.id( ), "modelViewMatrix");
@@ -257,6 +260,7 @@ public:
           currentMaterial = &whiteMaterial;
         }
         activateUniforms(_light0, _light1, currentMaterial);
+        //activateUniforms(_light0, _light1, teapots[i]->material);
         teapots[i]->draw( );
       }
       //no_lightShaderProgram.activate( );
