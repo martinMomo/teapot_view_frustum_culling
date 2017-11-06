@@ -187,6 +187,9 @@ public:
   }
   
   void checkVisibility(glm::mat4 clipPlaneMatrix){
+    // For the sake of this assignment, a teapot is defined to be
+    // inside the view frustum if and only if the position data
+    // member is within the volume defined by the view frustum.
     for(int i = 0; i < teapotCount; i++){
       // do something here to check to see if the teapots
       // are in or out of the view frustum. Set the visibility
