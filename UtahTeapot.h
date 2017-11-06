@@ -31,6 +31,10 @@ public:
     visible = true;
   }
   
+  ~UtahTeapot( ){
+    delete material;
+  }
+
   void draw( ){
     _glutSolidTeapot(scale);
   }

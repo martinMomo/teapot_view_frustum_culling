@@ -35,7 +35,7 @@ public:
   Camera(glm::vec3 position, glm::vec3 up, glm::vec3 la, float fieldOfViewInY, float n, float f):_rotationDelta(0.05), eyePosition(position), upVector(up), lookAt(la), fovy(fieldOfViewInY), near(n), far(f){
   }
 
-  Camera( ){ };
+  Camera( ){ }
   ~Camera( ){ }
 
   void draw( ){
@@ -107,12 +107,15 @@ public:
     glm::vec3 fll = dmax_dmin * nll;
     glm::vec3 flr = dmax_dmin * nlr;
 
-    /*
+  /*
+    std::cerr << "eye position: " << glm::to_string(eyePosition) << std::endl;
+    std::cerr << "gaze: " << glm::to_string(gaze( )) << std::endl;
+    std::cerr << "fovy: " << glm::to_string(upVector) << std::endl;
     std::cerr << "fovy: " << fovy << std::endl;
     std::cerr << "near: " << near << std::endl;
     std::cerr << "far: " << far << std::endl;
     std::cerr << "half height: " << h << std::endl;
-    std::cerr << "half width" << w << std::endl;
+    std::cerr << "half width: " << w << std::endl;
     std::cerr << "dmax_dmin: " << dmax_dmin << std::endl;
     std::cerr << "nur: " << glm::to_string(nur) << std::endl;
     std::cerr << "nul: " << glm::to_string(nul) << std::endl;
