@@ -108,9 +108,9 @@ public:
    
   void initLights( ){
     glm::vec3 color0(1.0, 1.0, 1.0);
-    glm::vec3 position0(0.0, 50.0, 50.0);
+    glm::vec3 position0(0.0, 20.0, 20.0);
     glm::vec3 color1(1.0, 1.0, 1.0);
-    glm::vec3 position1(0.0, 50.0, -50.0);
+    glm::vec3 position1(0.0, 20.0, -20.0);
     light0 = SpinningLight(color0, position0, centerPosition);
     light1 = SpinningLight(color1, position1, centerPosition);
   }
@@ -242,6 +242,7 @@ public:
       Material redMaterial = Material(glm::vec4(0.2, 0.2, 0.2, 1.0), glm::vec4(1.0, 0.0, 0.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
       Material whiteMaterial = Material(glm::vec4(0.2, 0.2, 0.2, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
       Material yellowMaterial = Material(glm::vec4(0.2, 0.2, 0.2, 1.0), glm::vec4(1.0, 1.0, 0.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
+      Material blueMaterial = Material(glm::vec4(0.2, 0.2, 0.2, 1.0), glm::vec4(0.0, 0.0, 1.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
       Material* currentMaterial = &redMaterial;
       shaderProgram.activate( );
       for(int i = 0; i < teapotCount; i++){
@@ -266,6 +267,23 @@ public:
       activateUniforms(_light0, _light1, &yellowMaterial);
       mainCamera.draw( );
       mainCamera.drawViewFrustum(ratio);
+
+      glm::vec4 lpos = light0.position( );
+      glm::vec3 lpos3 = glm::vec3(lpos);
+      modelViewMatrix = glm::translate(lookAtMatrix, lpos3);
+      normalMatrix = glm::inverseTranspose(modelViewMatrix);
+      activateUniforms(_light0, _light1, &blueMaterial);
+      light0.draw( );
+
+      lpos = light1.position( );
+      lpos3 = glm::vec3(lpos);
+      modelViewMatrix = glm::translate(lookAtMatrix, lpos3);
+      normalMatrix = glm::inverseTranspose(modelViewMatrix);
+      activateUniforms(_light0, _light1, &blueMaterial);
+      light1.draw( );
+
+
+
     }
 
     

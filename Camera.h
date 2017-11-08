@@ -98,16 +98,16 @@ public:
     float dmax_dmin = far / near;
     float h = halfHeight( );
     float w = halfWidth(windowAspectRatio);
-    glm::vec3 nur = eyePosition + near * gaze( ) + h * upVector + w * right( );
-    glm::vec3 nul = eyePosition + near * gaze( ) + h * upVector + -w * right( );
-    glm::vec3 nll = eyePosition + near * gaze( ) + -h * upVector + -w * right( );
-    glm::vec3 nlr = eyePosition + near * gaze( ) + -h * upVector + w * right( );
+    glm::vec3 nur = eyePosition + -(near * gaze( )) + h * upVector + w * right( );
+    glm::vec3 nul = eyePosition + -(near * gaze( )) + h * upVector + -w * right( );
+    glm::vec3 nll = eyePosition + -(near * gaze( )) + -h * upVector + -w * right( );
+    glm::vec3 nlr = eyePosition + -(near * gaze( )) + -h * upVector + w * right( );
     glm::vec3 fur = dmax_dmin * nur;
     glm::vec3 ful = dmax_dmin * nul;
     glm::vec3 fll = dmax_dmin * nll;
     glm::vec3 flr = dmax_dmin * nlr;
 
-  /*
+    /*
     std::cerr << "eye position: " << glm::to_string(eyePosition) << std::endl;
     std::cerr << "gaze: " << glm::to_string(gaze( )) << std::endl;
     std::cerr << "fovy: " << glm::to_string(upVector) << std::endl;

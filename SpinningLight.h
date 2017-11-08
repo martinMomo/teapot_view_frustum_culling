@@ -84,6 +84,48 @@ public:
     }
   }
 
+  void draw( ){
+    // unit cube; centered at origin, axis aligned
+    glBegin(GL_QUADS);
+    // Top
+    glNormal3f(0.0, 1.0, 0.0);
+    glVertex3f(0.5, 0.5, -0.5);
+    glVertex3f(0.5, 0.5, 0.5);
+    glVertex3f(-0.5, 0.5, 0.5);
+    glVertex3f(-0.5, 0.5, -0.5);
+    // Bottom
+    glNormal3f(0.0, -1.0, 0.0);
+    glVertex3f(0.5, -0.5, -0.5);
+    glVertex3f(0.5, -0.5, 0.5);
+    glVertex3f(-0.5, -0.5, 0.5);
+    glVertex3f(-0.5, -0.5, -0.5);
+    // Front
+    glNormal3f(0.0, 0.0, -1.0);
+    glVertex3f(0.5, -0.5, -0.5);
+    glVertex3f(0.5, 0.5, -0.5);
+    glVertex3f(-0.5, 0.5, -0.5);
+    glVertex3f(-0.5, -0.5, -0.5);
+    // Back
+    glNormal3f(0.0, 0.0, 1.0);
+    glVertex3f(0.5, -0.5, 0.5);
+    glVertex3f(0.5, 0.5, 0.5);
+    glVertex3f(-0.5, 0.5, 0.5);
+    glVertex3f(-0.5, -0.5, 0.5);
+    // Left
+    glNormal3f(-1.0, 0.0, 0.0);
+    glVertex3f(-0.5, -0.5, -0.5);
+    glVertex3f(-0.5, 0.5, -0.5);
+    glVertex3f(-0.5, 0.5, 0.5);
+    glVertex3f(-0.5, -0.5, 0.5);
+    // Right
+    glNormal3f(1.0, 0.0, 0.0);
+    glVertex3f(0.5, -0.5, -0.5);
+    glVertex3f(0.5, 0.5, -0.5);
+    glVertex3f(0.5, 0.5, 0.5);
+    glVertex3f(0.5, -0.5, 0.5);
+    glEnd( );
+  }
+
 private:
   float _rotationDelta;
   glm::vec3 _color;
