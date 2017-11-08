@@ -338,7 +338,7 @@ class GLFWApp{
     }
     GLFWApp *app = reinterpret_cast<GLFWApp*>(glfwGetWindowUserPointer(window));
     assert(app != nullptr);
-    app->_keyPressed[key] = (action == KEY_PRESS || action == GLFW_REPEAT);
+    app->_keyPressed[key] = (action == GLFW_PRESS || action == GLFW_REPEAT);
     if(app->isKeyPressed(GLFW_KEY_ESCAPE)){
       app->end( );
     }
