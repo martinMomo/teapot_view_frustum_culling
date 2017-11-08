@@ -21,58 +21,79 @@
 
 class SpinningLight{
 public:
+  glm::vec3 position;
+  // center is like lookAt in the camera
+  glm::vec3 center;
+  // tangent is like the upVector in the camera
+  glm::vec3 tangent;
+
   SpinningLight( ){ }
   SpinningLight(glm::vec3& color, glm::vec3& position, glm::vec3& center) :
-    _rotationDelta(0.05), _color(color), _position(position), _center(center), _savedColor(color), _isOn(true){
+    _rotationDelta(0.05), _color(color), position(position), center(center), _savedColor(color), _isOn(true){
       glm::vec3 random_vector = glm::sphericalRand(1.0);
       glm::vec3 d = direction( );
-      _tangent = glm::cross(d, random_vector);
+      tangent = glm::normalize(glm::cross(d, random_vector));
     }
 
   glm::vec4 color( ){return glm::vec4(_color, 1.0);}
-  glm::vec4 position( ){return glm::vec4(_position, 1.0);}
+  glm::vec4 position4( ){return glm::vec4(position, 1.0);}
   
   void rotateUp( ){
+    /*
     glm::vec3 f = direction( );
-    glm::vec3 _up = glm::normalize(_tangent);
+    glm::vec3 _up = glm::normalize(tangent);
     glm::vec3 s = glm::normalize(glm::cross(f, _up));
     glm::vec3 u = glm::cross(s, f);
     glm::mat3 m = glm::rotate(_rotationDelta, s);
-    _tangent = m * u;
-    _position = m * _position;
+    tangent = m * u;
+    position = m * position;
+    */
+
+    glm::vec3 r = right( );
+    glm::mat3 m = glm::rotate(-_rotationDelta, r);
+    tangent = m * tangent;
+    position = m * position;
+
   }
 
   void rotateDown( ){
+    /*
     glm::vec3 f = direction( );
-    glm::vec3 _up = glm::normalize(_tangent);
+    glm::vec3 _up = glm::normalize(tangent);
     glm::vec3 s = glm::normalize(glm::cross(f, _up));
     glm::vec3 u = glm::cross(s, f);
     glm::mat3 m = glm::rotate(_rotationDelta, s);
-    _tangent = m * u;
-    _position = m * _position;
+    tangent = m * u;
+    position = m * position;
+    */
+    glm::vec3 r = right( );
+    glm::mat3 m = glm::rotate(_rotationDelta, r);
+    tangent = m * tangent;
+    position = m * position;
+
   }
 
   void rotateLeft( ){
     glm::vec3 f = glm::normalize(direction( ));
-    glm::vec3 _up = glm::normalize(_tangent);
+    glm::vec3 _up = glm::normalize(tangent);
     glm::vec3 s = glm::normalize(glm::cross(f, _up));
     glm::vec3 u = glm::cross(s, f);
     glm::mat3 m = glm::rotate(_rotationDelta, u);
-    _position = m * _position;
+    position = m * position;
   }
 
   void rotateRight( ){
     glm::vec3 f = glm::normalize(direction( ));
-    glm::vec3 _up = glm::normalize(_tangent);
+    glm::vec3 _up = glm::normalize(tangent);
     glm::vec3 s = glm::normalize(glm::cross(f, _up));
     glm::vec3 u = glm::cross(s, f);
     glm::mat3 m = glm::rotate(_rotationDelta, u);
-    _position = m * _position;
+    position = m * position;
   }
 
   void roll( ){
     glm::mat3 m = glm::rotate(-_rotationDelta, direction( ));
-    _tangent = m * _tangent;
+    tangent = m * tangent;
   }
   
   void toggle( ){
@@ -129,20 +150,22 @@ public:
 private:
   float _rotationDelta;
   glm::vec3 _color;
-  glm::vec3 _position;
-  glm::vec3 _center;
-  glm::vec3 _tangent;
   glm::vec3 _savedColor;
   bool _isOn;
   
   glm::vec3 direction( ){
     glm::vec3 d;
-    d = glm::normalize(_center - _position);
+    d = glm::normalize(center - position);
     return d;
   }
 
+  glm::vec3 right( ){
+    glm::vec3 r = glm::normalize(glm::cross(direction( ), tangent));
+    return r;
+  }
+
   void debug( ){
-    std::cerr << "position " << glm::to_string(_position) << "(" << glm::length(_position) << ")" << "\ncenter " << glm::to_string(_center) << "\ntangent " << glm::to_string(_tangent) << "(" << glm::length(_tangent) << ")" << std::endl << std::endl;
+    std::cerr << "position " << glm::to_string(position) << "(" << glm::length(position) << ")" << "\ncenter " << glm::to_string(center) << "\ntangent " << glm::to_string(tangent) << "(" << glm::length(tangent) << ")" << std::endl << std::endl;
   }
 };
 

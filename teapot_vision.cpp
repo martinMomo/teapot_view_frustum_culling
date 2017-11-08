@@ -219,8 +219,8 @@ public:
     // Set light & material properties for the teapot;
     // lights are transformed by current modelview matrix
     // such that they are positioned correctly in the scene.
-    _light0 = lookAtMatrix * light0.position( );
-    _light1 = lookAtMatrix * light1.position( );
+    _light0 = lookAtMatrix * light0.position4( );
+    _light1 = lookAtMatrix * light1.position4( );
     
     if(currentCamera == &mainCamera){
       for(int i = 0; i < teapotCount; i++){
@@ -268,22 +268,15 @@ public:
       mainCamera.draw( );
       mainCamera.drawViewFrustum(ratio);
 
-      glm::vec4 lpos = light0.position( );
-      glm::vec3 lpos3 = glm::vec3(lpos);
-      modelViewMatrix = glm::translate(lookAtMatrix, lpos3);
+      modelViewMatrix = glm::translate(lookAtMatrix, light0.position);
       normalMatrix = glm::inverseTranspose(modelViewMatrix);
       activateUniforms(_light0, _light1, &blueMaterial);
       light0.draw( );
 
-      lpos = light1.position( );
-      lpos3 = glm::vec3(lpos);
-      modelViewMatrix = glm::translate(lookAtMatrix, lpos3);
+      modelViewMatrix = glm::translate(lookAtMatrix, light1.position);
       normalMatrix = glm::inverseTranspose(modelViewMatrix);
       activateUniforms(_light0, _light1, &blueMaterial);
       light1.draw( );
-
-
-
     }
 
     
