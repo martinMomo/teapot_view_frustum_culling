@@ -26,7 +26,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *
- * $Id: GLFWApp.h 6554 2017-09-05 06:58:22Z mshafae $
+ * $Id: GLFWApp.h 6586 2017-11-08 05:21:17Z mshafae $
  *
  * STUDENTS DO NOT NEED TO MAKE ANY CHANGES TO THIS FILE.
  *
@@ -84,7 +84,7 @@ class GLFWApp{
     MOUSE_BUTTON_NONE = 0,
     MOUSE_BUTTON_LEFT = 1,
     MOUSE_BUTTON_RIGHT = 2,
-    MOUSE_BUTTON_MIDDLE = 4
+    MOUSE_BUTTON_MIDDLE = 3
   }mouseButton_t;
 
   typedef enum{
@@ -265,6 +265,10 @@ class GLFWApp{
   std::tuple<int, int> mouseCurrentPosition( ){
     return _mouseCurrentPosition;
   }
+
+  std::tuple<int, int> mousePreviousPosition( ){
+    return _mousePreviousPosition;
+  }
   
   int mouseButtonFlags( ){
     return _mouseButtonFlags;
@@ -286,7 +290,6 @@ class GLFWApp{
     switch(action){
     case GLFW_PRESS:
       {
-        app->_mousePreviousPosition = app->_mouseCurrentPosition;
         switch(button)
           {
           case GLFW_MOUSE_BUTTON_LEFT:
@@ -330,6 +333,7 @@ class GLFWApp{
       }
       break;
       }
+    //std::cerr << app->_mouseButtonFlags << std::endl;
   }
   
   static void _keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
@@ -338,7 +342,7 @@ class GLFWApp{
     }
     GLFWApp *app = reinterpret_cast<GLFWApp*>(glfwGetWindowUserPointer(window));
     assert(app != nullptr);
-    app->_keyPressed[key] = (action == GLFW_PRESS || action == GLFW_REPEAT);
+    app->_keyPressed[key] = (action == KEY_PRESS || action == GLFW_REPEAT);
     if(app->isKeyPressed(GLFW_KEY_ESCAPE)){
       app->end( );
     }
@@ -347,6 +351,7 @@ class GLFWApp{
   static void _cursorPositionCallback(GLFWwindow* window, double x, double y){
     GLFWApp *app = reinterpret_cast<GLFWApp*>(glfwGetWindowUserPointer(window));
     assert(app != nullptr);
+    app->_mousePreviousPosition = app->_mouseCurrentPosition;
     app->_mouseCurrentPosition = std::make_tuple(int(floor(x)), int(floor(y)));
   }
   
