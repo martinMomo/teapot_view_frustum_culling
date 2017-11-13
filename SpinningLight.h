@@ -16,6 +16,8 @@
 #include <glm/gtc/random.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include "utilities.h"
+
 #ifndef _SPINNING_LIGHT_H_
 #define _SPINNING_LIGHT_H_
 
@@ -29,7 +31,8 @@ public:
 
   SpinningLight( ){ }
   SpinningLight(glm::vec3& color, glm::vec3& position, glm::vec3& center) :
-    position(position), center(center), _rotationDelta(0.05), _color(color), _savedColor(color), _isOn(true){
+    position(position), center(center), _color(color), _savedColor(color), _isOn(true){
+      _rotationDelta = deg2rad(1.0);
       glm::vec3 random_vector = glm::sphericalRand(1.0);
       glm::vec3 d = direction( );
       tangent = glm::normalize(glm::cross(d, random_vector));

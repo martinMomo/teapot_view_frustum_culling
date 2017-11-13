@@ -16,6 +16,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "utilities.h"
+
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
 
@@ -27,12 +29,14 @@ public:
   glm::vec3 eyePosition;
   glm::vec3 upVector;
   glm::vec3 lookAt;
+  // fovy in degrees!!
   float fovy;
   float near;
   float far;
 
 
-  Camera(glm::vec3 position, glm::vec3 up, glm::vec3 la, float fieldOfViewInY, float n, float f):_rotationDelta(0.05), eyePosition(position), upVector(up), lookAt(la), fovy(fieldOfViewInY), near(n), far(f){
+  Camera(glm::vec3 position, glm::vec3 up, glm::vec3 la, float fieldOfViewInY, float n, float f):eyePosition(position), upVector(up), lookAt(la), fovy(fieldOfViewInY), near(n), far(f){
+    _rotationDelta = deg2rad(1.0);
   }
 
   Camera( ){ }
@@ -81,7 +85,7 @@ public:
   }
 
   float halfHeightNear( ){
-    float fovy_rads = fovy * (M_PI / 180.0);
+    float fovy_rads = deg2rad(fovy);
     float hh = tan(fovy_rads / 2.0) * near;
     return hh;
   }
@@ -266,7 +270,7 @@ public:
   }
 
   void perspectiveMatrix(glm::mat4& m, float windowAspectRatio){
-    m = glm::perspective(fovy, windowAspectRatio, near, far);
+    m = glm::perspective(deg2rad(fovy), windowAspectRatio, near, far);
   }
 
   void lookAtMatrix(glm::mat4& m){

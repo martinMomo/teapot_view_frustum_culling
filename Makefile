@@ -25,10 +25,10 @@ endif
 
 TARGET = teapot_vision
 # C++ Files
-CXXFILES =   glut_teapot.cpp teapot_vision.cpp
+CXXFILES =   glut_teapot.cpp teapot_vision.cpp utilities.cpp
 CFILES =  
 # Headers
-HEADERS =  Camera.h GLFWApp.h GLSLShader.h GLTexture.h glut_teapot.h Material.h SpinningLight.h Teapot.h UtahTeapot.h
+HEADERS =  Camera.h GLFWApp.h GLSLShader.h GLTexture.h glut_teapot.h Material.h SpinningLight.h Teapot.h UtahTeapot.h utilities.h
 
 OBJECTS = $(CXXFILES:.cpp=.o) $(CFILES:.c=.o)
 
