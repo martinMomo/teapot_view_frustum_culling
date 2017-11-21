@@ -124,7 +124,7 @@ public:
     glm::vec3 nur = nearCenter + (upVector * hNear) + (right * wNear);
     glm::vec3 nul = nearCenter + (upVector * hNear) - (right * wNear);
     glm::vec3 nll = nearCenter - (upVector * hNear) - (right * wNear);
-    glm::vec3 nlr = nearCenter + (upVector * hNear) + (right * wNear);
+    glm::vec3 nlr = nearCenter - (upVector * hNear) + (right * wNear);
 
 
     glm::vec3 fur = farCenter + (upVector * hFar) + (right * wFar);
