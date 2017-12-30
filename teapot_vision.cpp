@@ -186,10 +186,12 @@ public:
     glUniform1f(uShininess, m->shininess);
   }
   
+  // The following function was programmged by:
+
+  // Earl Martin Momongan
+  // martinmomongan@gmail.com
+
   void checkVisibility(glm::mat4 clipPlaneMatrix){
-    // For the sake of this assignment, a teapot is defined to be
-    // inside the view frustum if and only if the position data
-    // member is within the volume defined by the view frustum.
 
     glm::vec4 position;  
     glm::mat4 lookAtMatrix; // multiplied with clipPlaneMatrix
@@ -197,9 +199,7 @@ public:
     mainCamera.lookAtMatrix(lookAtMatrix);
 
     for(int i = 0; i < teapotCount; i++){
-      // do something here to check to see if the teapots
-      // are in or out of the view frustum. Set the visibility
-      // flag as needed.
+
 	  position = glm::vec4(teapots[i]->position, 1.0);
       position = lookAtMatrix * position;
       position = clipPlaneMatrix * position;
